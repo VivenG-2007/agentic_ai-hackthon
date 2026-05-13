@@ -1,0 +1,68 @@
+{
+  "workflow_name": "broken-agentic-pipeline",
+  "version": "one",
+  "entrypoint": "collector",
+  "nodes": [
+    {
+      "id": "collector",
+      "type": "file_collector",
+      "timeout": -1,
+      "next": "planner"
+    },
+    {
+      "id": "planner",
+      "type": "llm_planner",
+      "model": "",
+      "temperature": 999,
+      "next": "router"
+    },
+    {
+      "id": "router",
+      "type": "tool_router",
+      "tools": "all",
+      "next": "executor"
+    },
+    {
+      "id": "executor",
+      "type": "python_runner",
+      "sandbox": false,
+      "retry_policy": null,
+      "next": "validator"
+    },
+    {
+      "id": "validator",
+      "type": "validator",
+      "rules": [],
+      "next": "memory"
+    },
+    {
+      "id": "memory",
+      "type": "vector_memory",
+      "provider": "unknown-db",
+      "next": "repair"
+    },
+    {
+      "id": "repair",
+      "type": "self_healer",
+      "auto_apply": true,
+      "next": "approval"
+    },
+    {
+      "id": "approval",
+      "type": "approval_gate",
+      "roles": [],
+      "next": "notifier"
+    },
+    {
+      "id": "notifier",
+      "type": "email_sender",
+      "smtp_server": "",
+      "next": "finalizer"
+    },
+    {
+      "id": "finalizer",
+      "type": "finalizer",
+      "next": "planner"
+    }
+  ]
+}
